@@ -77,13 +77,15 @@ namespace Lidgren.Network
 				return;
 			}
 
-			List<NetConnection> recipients = new List<NetConnection>(all.Count - 1);
+
+			var recipients = ConnectionListPool.Rent();
 			foreach (var conn in all)
 				if (conn != except)
 					recipients.Add(conn);
 
 			if (recipients.Count > 0)
 				SendMessage(msg, recipients, method, sequenceChannel);
+			ConnectionListPool.Return(recipients);
 		}
 
 		/// <summary>

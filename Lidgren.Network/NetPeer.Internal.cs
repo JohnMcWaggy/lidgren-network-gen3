@@ -231,7 +231,7 @@ namespace Lidgren.Network
 			LogDebug("Shutting down...");
 
 			// disconnect and make one final heartbeat
-			var list = new List<NetConnection>(m_handshakes.Count + m_connections.Count);
+			var list = ConnectionListPool.Rent();
 			lock (m_connections)
 			{
 				foreach (var conn in m_connections)
@@ -250,6 +250,8 @@ namespace Lidgren.Network
 			foreach (NetConnection conn in list)
 				conn.Shutdown(m_shutdownReason);
 
+			ConnectionListPool.Return(list);
+			
 			FlushDelayedPackets();
 
 			// one final heartbeat, will send stuff and do disconnect
@@ -403,7 +405,7 @@ namespace Lidgren.Network
 			if (m_socket == null)
 				return;
 
-			if (!m_socket.Poll(1000, SelectMode.SelectRead)) // wait up to 1 ms for data to arrive
+			if (!m_socket.Poll(10000, SelectMode.SelectRead)) // wait up to 10 ms for data to arrive
 				return;
 
 			//if (m_socket == null || m_socket.Available < 1)

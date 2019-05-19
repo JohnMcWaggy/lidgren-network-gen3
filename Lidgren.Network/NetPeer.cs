@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Net;
 
 #if !__NOIPENDPOINT__
@@ -21,6 +22,7 @@ namespace Lidgren.Network
 		private object m_messageReceivedEventCreationLock = new object();
 
 		internal readonly List<NetConnection> m_connections;
+		internal readonly ReadOnlyCollection<NetConnection> m_readOnlyConnections;
 		private readonly Dictionary<NetEndPoint, NetConnection> m_connectionLookup;
 
 		private string m_shutdownReason;
@@ -79,13 +81,14 @@ namespace Lidgren.Network
 		/// <summary>
 		/// Gets a copy of the list of connections
 		/// </summary>
-		public List<NetConnection> Connections
-		{
-			get
-			{
-				lock (m_connections)
-					return new List<NetConnection>(m_connections);
+		public List<NetConnection> GetConnections() {
+			var list = ConnectionListPool.Rent();
+			lock (m_connections) {
+				foreach (var conn in m_connections)
+					list.Add(conn);
 			}
+
+			return list;
 		}
 
 		/// <summary>
