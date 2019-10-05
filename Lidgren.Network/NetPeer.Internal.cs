@@ -123,7 +123,7 @@ namespace Lidgren.Network
 					mutex.WaitOne();
 
 					if (m_socket == null)
-						m_socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+						m_socket = new Socket(m_configuration.LocalAddress.AddressFamily, SocketType.Dgram, ProtocolType.Udp);
 
 					if (reBind)
 						m_socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, (int)1);
@@ -132,7 +132,14 @@ namespace Lidgren.Network
 					m_socket.SendBufferSize = m_configuration.SendBufferSize;
 					m_socket.Blocking = false;
 
-					var ep = (EndPoint)new NetEndPoint(m_configuration.LocalAddress, reBind ? m_listenPort : m_configuration.Port);
+                    if(m_configuration.DualStack && m_configuration.LocalAddress.AddressFamily == AddressFamily.InterNetworkV6)
+                        m_socket.DualMode = true;
+
+                    var localAddress = m_configuration.DualStack
+                        ? m_configuration.LocalAddress.MapToIPv6()
+                        : m_configuration.LocalAddress;
+
+                    var ep = (EndPoint)new NetEndPoint(localAddress, reBind ? m_listenPort : m_configuration.Port);
 					m_socket.Bind(ep);
 
 					try
