@@ -1,11 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net45;net46;net461;net462;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net45;net46;net461;netstandard2.0;netcoreapp3.1</TargetFrameworks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="..\Lidgren.Network\ConnectionListPool.cs">
+      <Link>ConnectionListPool.cs</Link>
+    </Compile>
     <Compile Include="..\Lidgren.Network\Properties\AssemblyInfo.cs" Link="Properties\AssemblyInfo.cs" />
     <Compile Include="..\Lidgren.Network\Encryption\NetAESEncryption.cs" Link="Encryption\NetAESEncryption.cs" />
     <Compile Include="..\Lidgren.Network\Encryption\NetBlockEncryptionBase.cs" Link="Encryption\NetBlockEncryptionBase.cs" />
